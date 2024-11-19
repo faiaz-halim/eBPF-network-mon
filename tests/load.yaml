@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-tester
+  namespace: cilium-demo
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: load-tester
+  template:
+    metadata:
+      labels:
+        app: load-tester
+    spec:
+      containers:
+      - name: load-generator
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          while true; do
+            # Generate multiple parallel requests
+            for i in $(seq 1 20); do
+              wget -q -O- http://backend/api &
+            done
+            wait
+            sleep 0.1
+          done
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-stresser
+  namespace: cilium-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-stresser
+  template:
+    metadata:
+      labels:
+        app: backend-stresser
+    spec:
+      containers:
+      - name: stresser
+        image: nginx:alpine
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          apk add --no-cache wrk
+          while true; do
+            wrk -t4 -c100 -d30s http://backend/api
+            sleep 2
+          done

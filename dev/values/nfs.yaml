@@ -1,0 +1,18 @@
+nfs:
+  server: 192.168.2.15
+  path: /home/faiaz/Work/study/ENGI9876/Project/env/data
+  mountOptions:
+    - nolock
+    - nfsvers=3
+  volumeName: data
+  reclaimPolicy: Retain
+storageClass:
+  create: true
+  defaultClass: true
+  name: nfs
+  allowVolumeExpansion: true
+  onDelete: delete
+  reclaimPolicy: Delete
+  archiveOnDelete: false
+  accessModes: ReadWriteOnce
+  volumeBindingMode: Immediate

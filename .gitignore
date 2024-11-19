@@ -1,0 +1,5 @@
+./data
+./kind
+./old
+kubectl
+*.tar.gz
